@@ -18,7 +18,7 @@ from http.server import HTTPServer
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
  
     
-
+    __version__ = "1.0"
     server_version = "SimpleHTTPWithUpload/" + __version__
  
     def do_GET(self):
