@@ -171,12 +171,12 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     "</head>\n"
     "<body>\n"
     "<h2>APK Leak - Upload APK</h2>\n"
-         ).encode())
+        ).encode())
 
-f.write(b"<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
-f.write(b"<input name=\"file\" type=\"file\"/>")
-f.write(b"<input type=\"submit\" value=\"Upload\"/></form>\n")
-f.write(b"<hr>\n<ul>\n")
+        f.write(b"<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
+        f.write(b"<input name=\"file\" type=\"file\"/>")
+        f.write(b"<input type=\"submit\" value=\"Upload\"/></form>\n")
+        f.write(b"<hr>\n<ul>\n")
         
         f.write(b"</ul>\n<hr>\n</body>\n</html>\n")
         length = f.tell()
@@ -229,7 +229,7 @@ f.write(b"<hr>\n<ul>\n")
         '.h': 'text/plain',
         })
  
-with HTTPServer(('', 3000), SimpleHTTPRequestHandler) as server:
+with HTTPServer(('', 8000), SimpleHTTPRequestHandler) as server:
     server.serve_forever()
 if __name__ == '__main__':
     test()
