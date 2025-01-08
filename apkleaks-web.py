@@ -154,14 +154,29 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         list.sort(key=lambda a: a.lower())
         f = BytesIO()
         displaypath = html.escape(urllib.parse.unquote(self.path))
-        f.write(b'<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
-        f.write(("<html>\n<title>APK Leaks Android Testing</title>\n").encode())
-        f.write(("<body>\n<h2>APK Leak - Upload APK</h2>\n").encode())
-        f.write(b"<hr>\n")
-        f.write(b"<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
-        f.write(b"<input name=\"file\" type=\"file\"/>")
-        f.write(b"<input type=\"submit\" value=\"upload\"/></form>\n")
-        f.write(b"<hr>\n<ul>\n")
+        f.write(b'<!DOCTYPE html>')
+        f.write((
+    "<html>\n"
+    "<head>\n"
+    "<title>APK Leaks Android Testing</title>\n"
+    "<style>\n"
+    "body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 0; text-align: center; }\n"
+    "h2 { color: #58a6ff; }\n"
+    "form { margin: 20px auto; padding: 20px; background: #161b22; border-radius: 10px; display: inline-block; }\n"
+    "input[type='file'], input[type='submit'] { margin: 10px; padding: 10px; border: none; border-radius: 5px; }\n"
+    "input[type='submit'] { background-color: #238636; color: #fff; cursor: pointer; }\n"
+    "input[type='submit']:hover { background-color: #2ea043; }\n"
+    "hr { border: 1px solid #30363d; margin: 20px 0; }\n"
+    "</style>\n"
+    "</head>\n"
+    "<body>\n"
+    "<h2>APK Leak - Upload APK</h2>\n"
+         ).encode())
+
+f.write(b"<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
+f.write(b"<input name=\"file\" type=\"file\"/>")
+f.write(b"<input type=\"submit\" value=\"Upload\"/></form>\n")
+f.write(b"<hr>\n<ul>\n")
         
         f.write(b"</ul>\n<hr>\n</body>\n</html>\n")
         length = f.tell()
