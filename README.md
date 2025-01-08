@@ -24,6 +24,6 @@ Install my-project with npm
 To access the server
 
 ```
-http://127.0.0.1:3000
+http://127.0.0.1:8000
 ```
 
