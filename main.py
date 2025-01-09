@@ -14,7 +14,6 @@ from http.server import HTTPServer
 
 
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
-
     __version__ = "1.0"
     server_version = "SimpleHTTPWithUpload/" + __version__
 
@@ -52,19 +51,18 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     def deal_post_data(self):
         content_type = self.headers['content-type']
         if not content_type:
-            return (False, "Content-Type header doesn't contain boundary")
+            return False, "Content-Type header doesn't contain boundary"
         boundary = content_type.split("=")[1].encode()
         remainbytes = int(self.headers['content-length'])
         line = self.rfile.readline()
         remainbytes -= len(line)
         if not boundary in line:
-            return (False, "Content NOT begin with boundary")
+            return False, "Content NOT begin with boundary"
         line = self.rfile.readline()
         remainbytes -= len(line)
         fn = re.findall(r'Content-Disposition.*name="file"; filename="(.*)"', line.decode())
-        fn2 = re.findall(r'Content-Disposition.*name="file"; filename="(.*)"', line.decode())
         if not fn:
-            return (False, "Can't find out file name...")
+            return False, "Can't find out file name..."
         path = self.translate_path(self.path)
         fn = os.path.join(path, fn[0])
         line = self.rfile.readline()
@@ -74,7 +72,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         try:
             out = open(fn, 'wb')
         except IOError:
-            return (False, "Can't create file to write, do you have permission to write?")
+            return False, "Can't create file to write, do you have permission to write?"
 
         preline = self.rfile.readline()
         remainbytes -= len(preline)
@@ -87,17 +85,17 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
                     preline = preline[0:-1]
                 out.write(preline)
                 out.close()
-                modifiedname = fn2[0] + ".txt"
+                modifiedname = os.path.basename(fn) + ".txt"
                 outputfilename = os.path.join(path, modifiedname)
 
                 process = subprocess.Popen(["apkleaks", "-f", fn, "-o", outputfilename])
                 process.wait()
 
-                return (True, outputfilename)
+                return True, outputfilename
             else:
                 out.write(preline)
                 preline = line
-        return (False, "Unexpected Ends of data.")
+        return False, "Unexpected end of data."
 
     def send_head(self):
         path = self.translate_path(self.path)
@@ -130,55 +128,47 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         return f
 
     def list_directory(self, path):
+        """Helper to produce a directory listing, but only showing .apk files."""
         try:
-            list = os.listdir(path)
+            files = [f for f in os.listdir(path) if f.endswith('.apk')]
         except os.error:
             self.send_error(404, "No permission to list directory")
             return None
-        list.sort(key=lambda a: a.lower())
+
+        files.sort(key=lambda a: a.lower())
         f = BytesIO()
         displaypath = html.escape(urllib.parse.unquote(self.path))
         f.write(b'<!DOCTYPE html>')
         f.write((
             "<html>\n"
             "<head>\n"
-            "<title>by TRHACKNON, APK Leaks Android Testing</title>\n"
+            "<title>APK Leak Scanner</title>\n"
             "<style>\n"
-            "body { font-family: 'Courier New', monospace; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 0; text-align: center; }\n"
-            "h2 { color: #58a6ff; text-shadow: 0 0 10px #58a6ff; }\n"
-            "form { margin: 20px auto; padding: 20px; background: #161b22; border-radius: 10px; display: inline-block; box-shadow: 0 0 15px #238636; }\n"
-            "input[type='file'], input[type='submit'] { margin: 10px; padding: 10px; border: none; border-radius: 5px; font-size: 14px; }\n"
-            "input[type='submit'] { background-color: #238636; color: #fff; cursor: pointer; transition: background-color 0.3s ease; }\n"
-            "input[type='submit']:hover { background-color: #2ea043; box-shadow: 0 0 10px #2ea043; }\n"
+            "body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 0; text-align: center; }\n"
+            "h2 { color: #58a6ff; }\n"
+            "form { margin: 20px auto; padding: 20px; background: #161b22; border-radius: 10px; display: inline-block; }\n"
+            "input[type='file'], input[type='submit'] { margin: 10px; padding: 10px; border: none; border-radius: 5px; }\n"
+            "input[type='submit'] { background-color: #238636; color: #fff; cursor: pointer; }\n"
+            "input[type='submit']:hover { background-color: #2ea043; }\n"
             "hr { border: 1px solid #30363d; margin: 20px 0; }\n"
-            "ul { list-style-type: none; padding: 0; }\n"
-            "li { margin: 5px 0; color: #58a6ff; }\n"
-            "li:hover { color: #2ea043; cursor: pointer; text-shadow: 0 0 5px #2ea043; }\n"
-            "img { max-width: 150px; margin-top: 20px; border-radius: 10px; box-shadow: 0 0 10px #58a6ff; }\n"
-            "a { color: #58a6ff; text-decoration: none; }\n"
-            "a:hover { color: #2ea043; text-shadow: 0 0 5px #2ea043; }\n"
+            "img { max-width: 150px; margin-top: 20px; border-radius: 10px; }\n"
             "</style>\n"
             "</head>\n"
             "<body>\n"
-            "<h2>APK Leak - Upload APK</h2>\n"
+            "<h2>APK Leak Scanner</h2>\n"
             "<center><img src='https://h.top4top.io/p_32961wh6f0.jpg' alt='APK Leak Logo'></center>\n"
-            "<form method='POST' enctype='multipart/form-data'>\n"
-            "<input type='file' name='apkfile' required><br>\n"
-            "<input type='submit' value='Upload APK'>\n"
-            "</form>\n"
-            "<hr>\n"
-            "<ul>\n"
         ).encode())
 
-        for name in list:
+        f.write(b"<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
+        f.write(b"<input name=\"file\" type=\"file\"/>")
+        f.write(b"<input type=\"submit\" value=\"Upload\"/></form>\n")
+        f.write(b"<hr>\n<ul>\n")
+
+        for name in files:
             fullname = os.path.join(path, name)
             displayname = linkname = name
-            if os.path.isdir(fullname):
-                displayname = name + "/"
-                linkname = name + "/"
-            f.write((
-                f"<li><a href=\"{html.escape(linkname)}\">{html.escape(displayname)}</a></li>\n"
-            ).encode())
+            f.write(('<li><a href="%s">%s</a></li>\n' % (
+                urllib.parse.quote(linkname), html.escape(displayname))).encode())
 
         f.write(b"</ul>\n<hr>\n</body>\n</html>\n")
         length = f.tell()
@@ -218,15 +208,17 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             return self.extensions_map['']
 
     if not mimetypes.inited:
-        mimetypes.init()
+        mimetypes.init()  # try to read system mime.types
     extensions_map = mimetypes.types_map.copy()
     extensions_map.update({
-        '': 'application/octet-stream',
+        '': 'application/octet-stream',  # Default
         '.py': 'text/plain',
         '.c': 'text/plain',
         '.h': 'text/plain',
     })
 
 
-with HTTPServer(('', 8000), SimpleHTTPRequestHandler) as server:
-    server.serve_forever()
+if __name__ == '__main__':
+    with HTTPServer(('', 8000), SimpleHTTPRequestHandler) as server:
+        print("Serving on port 8000...")
+        server.serve_forever()
