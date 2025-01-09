@@ -14,8 +14,8 @@ An simple python server script which allows you to use apkleaks over web. The sc
 Install my-project with npm
 
 ```bash
-  pip3 install apkleaks
-  python3 apkleaks-web.py
+  pip3 install -r requirements.txt
+  python3 main.py
 ```
     
 
