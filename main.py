@@ -158,7 +158,7 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         f.write((
     "<html>\n"
     "<head>\n"
-    "<title>APK Leaks Android Testing</title>\n"
+    "<title>by TRHACKNON, APK Leaks Android Testing</title>\n"
     "<style>\n"
     "body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 0; text-align: center; }\n"
     "h2 { color: #58a6ff; }\n"
@@ -167,10 +167,19 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     "input[type='submit'] { background-color: #238636; color: #fff; cursor: pointer; }\n"
     "input[type='submit']:hover { background-color: #2ea043; }\n"
     "hr { border: 1px solid #30363d; margin: 20px 0; }\n"
+    "img { max-width: 150px; margin-top: 20px; border-radius: 10px; }\n"
     "</style>\n"
     "</head>\n"
     "<body>\n"
     "<h2>APK Leak - Upload APK</h2>\n"
+    "<img src='https://h.top4top.io/p_32961wh6f0.jpg' alt='APK Leak Logo'>\n"
+    "<form method='POST' enctype='multipart/form-data'>\n"
+    "<input type='file' name='apkfile' required><br>\n"
+    "<input type='submit' value='Upload APK'>\n"
+    "</form>\n"
+    "<hr>\n"
+    "</body>\n"
+    "</html>\n"
         ).encode())
 
         f.write(b"<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
