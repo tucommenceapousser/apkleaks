@@ -173,13 +173,6 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     "<body>\n"
     "<h2>APK Leak - Upload APK</h2>\n"
     "<img src='https://h.top4top.io/p_32961wh6f0.jpg' alt='APK Leak Logo'>\n"
-    "<form method='POST' enctype='multipart/form-data'>\n"
-    "<input type='file' name='apkfile' required><br>\n"
-    "<input type='submit' value='Upload APK'>\n"
-    "</form>\n"
-    "<hr>\n"
-    "</body>\n"
-    "</html>\n"
         ).encode())
 
         f.write(b"<form ENCTYPE=\"multipart/form-data\" method=\"post\">")
